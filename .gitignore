@@ -1,0 +1,49 @@
+# NEXARA Command Center
+
+A dark-themed operational dashboard inspired by modern command-center interfaces for asset monitoring, fleet tracking, telemetry, and alert management.
+
+## Features
+- Live asset dashboard
+- Real-time alert summary
+- Movement and route tracking visualization
+- Telemetry metrics panel
+- System health monitoring
+- Mission and weather overview
+- Responsive dashboard layout
+
+## Tech Stack
+- Node.js
+- Express
+- HTML
+- CSS
+- Vanilla JavaScript
+
+## Run locally
+
+```bash
+npm install
+npm start
+```
+
+Then open:
+
+```bash
+http://localhost:3000
+```
+
+## Folder Structure
+
+```bash
+nexara-command-center/
+├── public/
+│   ├── index.html
+│   ├── styles.css
+│   └── app.js
+├── server.js
+├── package.json
+├── README.md
+└── .gitignore
+```
+
+## Notes
+This project is built with realistic mock data to visually match a command-center dashboard and can be extended with real GPS, telemetry, authentication, and database integration.

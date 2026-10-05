@@ -1,0 +1,278 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NEXARA Command Center</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="topbar">
+        <div class="brand-wrap">
+          <div class="brand-icon">N</div>
+          <div class="brand-text">
+            <span class="brand-name">NEXARA</span>
+            <span class="brand-sub">COMMAND CENTER</span>
+          </div>
+        </div>
+
+        <nav class="nav">
+          <button class="nav-btn active">Dashboard</button>
+          <button class="nav-btn">Map</button>
+          <button class="nav-btn">Assets</button>
+          <button class="nav-btn">Monitoring</button>
+          <button class="nav-btn">Intelligence</button>
+          <button class="nav-btn">Reports</button>
+          <button class="nav-btn">Admin</button>
+        </nav>
+
+        <div class="header-actions">
+          <button class="icon-btn">⌕</button>
+          <button class="icon-btn">🔔</button>
+          <button class="icon-btn">⚙</button>
+          <div class="user-box">
+            <div class="user-avatar">A</div>
+            <div>
+              <div class="user-name">Admin</div>
+              <div class="user-role">Supervisor</div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="status-strip">
+        <div class="status-item">
+          <span class="label">System Time</span>
+          <span id="system-time" class="value">--</span>
+        </div>
+        <div class="status-item">
+          <span class="label">System Status</span>
+          <span id="system-status" class="value positive">--</span>
+        </div>
+        <div class="status-item">
+          <span class="label">Active Assets</span>
+          <span id="summary-assets" class="value">--</span>
+        </div>
+        <div class="status-item">
+          <span class="label">Online Assets</span>
+          <span id="summary-online" class="value">--</span>
+        </div>
+        <div class="status-item">
+          <span class="label">Alert Levels</span>
+          <span id="summary-alerts" class="value danger">--</span>
+        </div>
+        <div class="status-item">
+          <span class="label">Network</span>
+          <span class="value positive">Good</span>
+        </div>
+        <div class="status-item">
+          <span class="label">GPS</span>
+          <span class="value positive">Good</span>
+        </div>
+        <div class="status-item">
+          <span class="label">Servers</span>
+          <span class="value positive">Operational</span>
+        </div>
+      </div>
+
+      <main class="dashboard">
+        <aside class="left-panel">
+          <section class="card alert-card">
+            <div class="card-header">
+              <h3>Alert Summary</h3>
+              <button>View All</button>
+            </div>
+            <div class="alert-list">
+              <div class="alert-row critical">
+                <span class="alert-badge">!</span>
+                <div>
+                  <strong>Critical</strong>
+                  <small>Requires Immediate Action</small>
+                </div>
+                <span id="critical-count" class="alert-count">0</span>
+              </div>
+              <div class="alert-row high">
+                <span class="alert-badge">!</span>
+                <div>
+                  <strong>High</strong>
+                  <small>High Priority Alerts</small>
+                </div>
+                <span id="high-count" class="alert-count">0</span>
+              </div>
+              <div class="alert-row medium">
+                <span class="alert-badge">!</span>
+                <div>
+                  <strong>Medium</strong>
+                  <small>Medium Priority Alerts</small>
+                </div>
+                <span id="medium-count" class="alert-count">0</span>
+              </div>
+              <div class="alert-row low">
+                <span class="alert-badge">!</span>
+                <div>
+                  <strong>Low</strong>
+                  <small>Low Priority Alerts</small>
+                </div>
+                <span id="low-count" class="alert-count">0</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="card asset-card">
+            <div class="card-header">
+              <h3>Asset Status</h3>
+              <button>View All</button>
+            </div>
+            <div class="donut-wrap">
+              <div class="donut chart">
+                <div class="donut-inner">
+                  <span id="asset-total">0</span>
+                  <small>Total Assets</small>
+                </div>
+              </div>
+            </div>
+            <div class="asset-status-list">
+              <div class="status-item-row">
+                <span class="dot online"></span>
+                <span>Online</span>
+                <strong id="online-txt">0</strong>
+              </div>
+              <div class="status-item-row">
+                <span class="dot offline"></span>
+                <span>Offline</span>
+                <strong id="offline-txt">0</strong>
+              </div>
+              <div class="status-item-row">
+                <span class="dot maintenance"></span>
+                <span>Maintenance</span>
+                <strong id="maintenance-txt">0</strong>
+              </div>
+            </div>
+          </section>
+
+          <section class="card categories-card">
+            <div class="card-header">
+              <h3>Asset Categories</h3>
+              <button>View All</button>
+            </div>
+            <div id="category-list" class="category-list"></div>
+          </section>
+        </aside>
+
+        <section class="map-panel">
+          <div class="map-toolbar">
+            <div class="toolbar-buttons">
+              <button class="toolbar-btn">Map</button>
+              <button class="toolbar-btn">Satellite</button>
+              <button class="toolbar-btn">Hybrid</button>
+            </div>
+            <div class="toolbar-search">
+              <input type="text" placeholder="Search location, asset zone..." />
+            </div>
+          </div>
+
+          <div class="map-surface">
+            <div class="map-grid"></div>
+            <div class="zone zone-red">Restricted Zone A</div>
+            <div class="zone zone-orange">Restricted Zone B</div>
+            <div class="marker marker-blue" style="left: 28%; top: 38%;">VT-1247</div>
+            <div class="marker marker-orange" style="left: 40%; top: 58%;">VT-5632</div>
+            <div class="marker marker-red" style="left: 67%; top: 53%;">Threat</div>
+          </div>
+        </section>
+
+        <aside class="right-panel">
+          <section class="card selected-card">
+            <div class="card-header margin-bottom">
+              <h3>Selected Asset</h3>
+              <button>Close</button>
+            </div>
+            <div id="selected-asset" class="selected-asset"></div>
+          </section>
+
+          <section class="card telemetry-card">
+            <div class="card-header">
+              <h3>Live Telemetry</h3>
+              <button>View All</button>
+            </div>
+            <div class="telemetry-gauges">
+              <div class="gauge"><div class="gauge-inner"><span>2100 RPM</span></div></div>
+              <div class="gauge"><div class="gauge-inner"><span>13.6V</span></div></div>
+              <div class="gauge"><div class="gauge-inner"><span>73%</span></div></div>
+            </div>
+          </section>
+
+          <section class="card recent-alerts-card">
+            <div class="card-header">
+              <h3>Recent Alerts</h3>
+              <button>View All</button>
+            </div>
+            <div id="recent-alerts" class="recent-alerts"></div>
+          </section>
+
+          <section class="card system-health-card">
+            <div class="card-header">
+              <h3>System Health</h3>
+              <button>View All</button>
+            </div>
+            <div id="system-health" class="health-list"></div>
+          </section>
+        </aside>
+      </main>
+
+      <section class="lower-grid">
+        <div class="card summary-card mission-card">
+          <div class="card-header">
+            <h3>Mission Status</h3>
+            <button>View All</button>
+          </div>
+          <div class="mission-ring">
+            <div class="ring-outer">
+              <span>68%</span>
+            </div>
+          </div>
+          <div class="mission-values">
+            <div><small>Active Missions</small><strong>14</strong></div>
+            <div><small>Completed</small><strong>9</strong></div>
+            <div><small>Failed</small><strong>1</strong></div>
+            <div><small>Pending</small><strong>4</strong></div>
+          </div>
+        </div>
+
+        <div class="card summary-card">
+          <div class="card-header">
+            <h3>Top Active Routes</h3>
+            <button>View All</button>
+          </div>
+          <div id="routes-list" class="routes-list"></div>
+        </div>
+
+        <div class="card summary-card weather-card">
+          <div class="card-header">
+            <h3>Weather Overlay</h3>
+            <button>View All</button>
+          </div>
+          <div class="weather-box">
+            <div class="weather-temp">34°C</div>
+            <div class="weather-desc">Partly Cloudy</div>
+            <div class="weather-meta">Feels like 36°C</div>
+          </div>
+        </div>
+
+        <div class="card summary-card event-card">
+          <div class="card-header">
+            <h3>Event Stream</h3>
+            <button>View All</button>
+          </div>
+          <div id="event-stream" class="event-stream"></div>
+        </div>
+      </section>
+    </div>
+
+    <script src="/app.js"></script>
+  </body>
+</html>

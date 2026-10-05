@@ -1,0 +1,13 @@
+{
+  "name": "nexara-command-center",
+  "version": "1.0.0",
+  "description": "NEXARA Command Center Dashboard with live telemetry and asset monitoring",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2"
+  }
+}
