@@ -1,202 +1,309 @@
-const loginScreen = document.getElementById('login-screen');
-const dashboardScreen = document.getElementById('dashboard-screen');
-const loginForm = document.getElementById('login-form');
-const logoutBtn = document.getElementById('logout-btn');
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>NEXARA Command Center</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div id="login-screen" class="auth-screen active">
+      <div class="auth-panel">
+        <div class="brand-wrap auth-brand">
+          <div class="brand-icon">N</div>
+          <div class="brand-text">
+            <span class="brand-name">NEXARA</span>
+            <span class="brand-sub">COMMAND CENTER</span>
+          </div>
+        </div>
 
-let authToken = localStorage.getItem('nexara-token') || '';
+        <h1>Secure Operations Login</h1>
+        <p>Access mission control, asset telemetry and alert dashboard.</p>
 
-function setAuthVisible(isLoggedIn) {
-  loginScreen.classList.toggle('active', !isLoggedIn);
-  loginScreen.classList.toggle('hidden', isLoggedIn);
-  dashboardScreen.classList.toggle('hidden', !isLoggedIn);
-}
+        <form id="login-form" class="login-form">
+          <label>
+            <span>Username</span>
+            <input type="text" id="username" value="admin" required />
+          </label>
+          <label>
+            <span>Password</span>
+            <input type="password" id="password" value="admin123" required />
+          </label>
+          <button type="submit">Login to Command Center</button>
+        </form>
 
-async function fetchDashboard() {
-  if (!authToken) return;
-
-  try {
-    const res = await fetch('/api/dashboard', {
-      headers: { Authorization: `Bearer ${authToken}` }
-    });
-
-    if (res.status === 401) {
-      localStorage.removeItem('nexara-token');
-      authToken = '';
-      setAuthVisible(false);
-      return;
-    }
-
-    const data = await res.json();
-    renderDashboard(data);
-  } catch (err) {
-    console.error('Dashboard fetch failed', err);
-  }
-}
-
-function renderDashboard(data) {
-  const { overview, alerts, missions, health, telemetry, selectedAsset } = data;
-
-  document.getElementById('system-time').textContent = overview.systemTime;
-  document.getElementById('system-status').textContent = overview.systemStatus;
-  document.getElementById('summary-assets').textContent = `${overview.totalAssets} total`;
-  document.getElementById('summary-online').textContent = `${overview.onlineAssets} online`;
-  document.getElementById('summary-alerts').textContent = `${overview.alertSummary.critical + overview.alertSummary.high + overview.alertSummary.medium + overview.alertSummary.low} alerts`;
-
-  document.getElementById('critical-count').textContent = overview.alertSummary.critical;
-  document.getElementById('high-count').textContent = overview.alertSummary.high;
-  document.getElementById('medium-count').textContent = overview.alertSummary.medium;
-  document.getElementById('low-count').textContent = overview.alertSummary.low;
-
-  document.getElementById('asset-total').textContent = overview.totalAssets;
-  document.getElementById('online-txt').textContent = `${overview.onlineAssets}`;
-  document.getElementById('offline-txt').textContent = `${overview.offlineAssets}`;
-  document.getElementById('maintenance-txt').textContent = `${overview.maintenanceAssets}`;
-
-  const categoryList = document.getElementById('category-list');
-  categoryList.innerHTML = Object.entries(overview.categories).map(([key, value]) => `
-    <div class="category-row">
-      <span>${key.charAt(0).toUpperCase() + key.slice(1)}</span>
-      <strong>${value.total}</strong>
-      <div class="bar"><span style="width:${Number(value.percentage.replace('%', ''))}%"></span></div>
-    </div>
-  `).join('');
-
-  const selectedAssetContainer = document.getElementById('selected-asset');
-  selectedAssetContainer.innerHTML = `
-    <div class="asset-card-main">
-      <div class="asset-photo"></div>
-      <div class="asset-meta">
-        <h4>${selectedAsset.id}</h4>
-        <p>${selectedAsset.name}</p>
-        <p>${selectedAsset.type} · <span class="positive">${selectedAsset.status}</span></p>
+        <div class="demo-credentials">
+          <small>Demo credentials: admin / admin123</small>
+        </div>
       </div>
     </div>
-    <div class="asset-details">
-      <div class="detail-box">
-        <span>Speed</span>
-        <strong>${selectedAsset.speed} km/h</strong>
+
+    <div id="dashboard-screen" class="app-shell hidden">
+      <header class="topbar">
+        <div class="brand-wrap">
+          <div class="brand-icon">N</div>
+          <div class="brand-text">
+            <span class="brand-name">NEXARA</span>
+            <span class="brand-sub">COMMAND CENTER</span>
+          </div>
+        </div>
+
+        <nav class="nav">
+          <button class="nav-btn active">Dashboard</button>
+          <button class="nav-btn">Map</button>
+          <button class="nav-btn">Assets</button>
+          <button class="nav-btn">Monitoring</button>
+          <button class="nav-btn">Intelligence</button>
+          <button class="nav-btn">Reports</button>
+          <button class="nav-btn">Admin</button>
+        </nav>
+
+        <div class="header-actions">
+          <button class="icon-btn">⌕</button>
+          <button class="icon-btn">🔔</button>
+          <button id="logout-btn" class="icon-btn danger-btn">Logout</button>
+          <div class="user-box">
+            <div class="user-avatar">A</div>
+            <div>
+              <div class="user-name">Admin</div>
+              <div class="user-role">Supervisor</div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <div class="status-strip">
+        <div class="status-item">
+          <span class="label">System Time</span>
+          <span id="system-time" class="value">--</span>
+        </div>
+        <div class="status-item">
+          <span class="label">System Status</span>
+          <span id="system-status" class="value positive">--</span>
+        </div>
+        <div class="status-item">
+          <span class="label">Active Assets</span>
+          <span id="summary-assets" class="value">--</span>
+        </div>
+        <div class="status-item">
+          <span class="label">Online Assets</span>
+          <span id="summary-online" class="value">--</span>
+        </div>
+        <div class="status-item">
+          <span class="label">Alert Levels</span>
+          <span id="summary-alerts" class="value danger">--</span>
+        </div>
+        <div class="status-item">
+          <span class="label">Network</span>
+          <span class="value positive">Good</span>
+        </div>
+        <div class="status-item">
+          <span class="label">GPS</span>
+          <span class="value positive">Good</span>
+        </div>
+        <div class="status-item">
+          <span class="label">Servers</span>
+          <span class="value positive">Operational</span>
+        </div>
       </div>
-      <div class="detail-box">
-        <span>Heading</span>
-        <strong>${selectedAsset.heading}</strong>
-      </div>
-      <div class="detail-box">
-        <span>Location</span>
-        <strong>${selectedAsset.location.latitude.toFixed(4)}, ${selectedAsset.location.longitude.toFixed(4)}</strong>
-      </div>
-      <div class="detail-box">
-        <span>Altitude</span>
-        <strong>${selectedAsset.location.altitude} m</strong>
-      </div>
-      <div class="detail-box">
-        <span>Fuel</span>
-        <strong>${selectedAsset.fuelLevel}%</strong>
-      </div>
-      <div class="detail-box">
-        <span>Driver</span>
-        <strong>${selectedAsset.driver}</strong>
-      </div>
+
+      <main class="dashboard">
+        <aside class="left-panel">
+          <section class="card alert-card">
+            <div class="card-header">
+              <h3>Alert Summary</h3>
+              <button>View All</button>
+            </div>
+            <div class="alert-list">
+              <div class="alert-row critical">
+                <span class="alert-badge">!</span>
+                <div>
+                  <strong>Critical</strong>
+                  <small>Requires Immediate Action</small>
+                </div>
+                <span id="critical-count" class="alert-count">0</span>
+              </div>
+              <div class="alert-row high">
+                <span class="alert-badge">!</span>
+                <div>
+                  <strong>High</strong>
+                  <small>High Priority Alerts</small>
+                </div>
+                <span id="high-count" class="alert-count">0</span>
+              </div>
+              <div class="alert-row medium">
+                <span class="alert-badge">!</span>
+                <div>
+                  <strong>Medium</strong>
+                  <small>Medium Priority Alerts</small>
+                </div>
+                <span id="medium-count" class="alert-count">0</span>
+              </div>
+              <div class="alert-row low">
+                <span class="alert-badge">!</span>
+                <div>
+                  <strong>Low</strong>
+                  <small>Low Priority Alerts</small>
+                </div>
+                <span id="low-count" class="alert-count">0</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="card asset-card">
+            <div class="card-header">
+              <h3>Asset Status</h3>
+              <button>View All</button>
+            </div>
+            <div class="donut-wrap">
+              <div class="donut chart">
+                <div class="donut-inner">
+                  <span id="asset-total">0</span>
+                  <small>Total Assets</small>
+                </div>
+              </div>
+            </div>
+            <div class="asset-status-list">
+              <div class="status-item-row">
+                <span class="dot online"></span>
+                <span>Online</span>
+                <strong id="online-txt">0</strong>
+              </div>
+              <div class="status-item-row">
+                <span class="dot offline"></span>
+                <span>Offline</span>
+                <strong id="offline-txt">0</strong>
+              </div>
+              <div class="status-item-row">
+                <span class="dot maintenance"></span>
+                <span>Maintenance</span>
+                <strong id="maintenance-txt">0</strong>
+              </div>
+            </div>
+          </section>
+
+          <section class="card categories-card">
+            <div class="card-header">
+              <h3>Asset Categories</h3>
+              <button>View All</button>
+            </div>
+            <div id="category-list" class="category-list"></div>
+          </section>
+        </aside>
+
+        <section class="map-panel">
+          <div class="map-toolbar">
+            <div class="toolbar-buttons">
+              <button class="toolbar-btn">Map</button>
+              <button class="toolbar-btn">Satellite</button>
+              <button class="toolbar-btn">Hybrid</button>
+            </div>
+            <div class="toolbar-search">
+              <input type="text" placeholder="Search location, asset zone..." />
+            </div>
+          </div>
+
+          <div class="map-surface">
+            <div class="map-grid"></div>
+            <div class="zone zone-red">Restricted Zone A</div>
+            <div class="zone zone-orange">Restricted Zone B</div>
+            <div class="marker marker-blue" style="left: 28%; top: 38%;">VT-1247</div>
+            <div class="marker marker-orange" style="left: 40%; top: 58%;">VT-5632</div>
+            <div class="marker marker-red" style="left: 67%; top: 53%;">Threat</div>
+          </div>
+        </section>
+
+        <aside class="right-panel">
+          <section class="card selected-card">
+            <div class="card-header margin-bottom">
+              <h3>Selected Asset</h3>
+              <button>Close</button>
+            </div>
+            <div id="selected-asset" class="selected-asset"></div>
+          </section>
+
+          <section class="card telemetry-card">
+            <div class="card-header">
+              <h3>Live Telemetry</h3>
+              <button>View All</button>
+            </div>
+            <div class="telemetry-gauges">
+              <div class="gauge"><div class="gauge-inner"><span>2100 RPM</span></div></div>
+              <div class="gauge"><div class="gauge-inner"><span>13.6V</span></div></div>
+              <div class="gauge"><div class="gauge-inner"><span>73%</span></div></div>
+            </div>
+          </section>
+
+          <section class="card recent-alerts-card">
+            <div class="card-header">
+              <h3>Recent Alerts</h3>
+              <button>View All</button>
+            </div>
+            <div id="recent-alerts" class="recent-alerts"></div>
+          </section>
+
+          <section class="card system-health-card">
+            <div class="card-header">
+              <h3>System Health</h3>
+              <button>View All</button>
+            </div>
+            <div id="system-health" class="health-list"></div>
+          </section>
+        </aside>
+      </main>
+
+      <section class="lower-grid">
+        <div class="card summary-card mission-card">
+          <div class="card-header">
+            <h3>Mission Status</h3>
+            <button>View All</button>
+          </div>
+          <div class="mission-ring">
+            <div class="ring-outer">
+              <span>68%</span>
+            </div>
+          </div>
+          <div class="mission-values">
+            <div><small>Active Missions</small><strong>14</strong></div>
+            <div><small>Completed</small><strong>9</strong></div>
+            <div><small>Failed</small><strong>1</strong></div>
+            <div><small>Pending</small><strong>4</strong></div>
+          </div>
+        </div>
+
+        <div class="card summary-card">
+          <div class="card-header">
+            <h3>Top Active Routes</h3>
+            <button>View All</button>
+          </div>
+          <div id="routes-list" class="routes-list"></div>
+        </div>
+
+        <div class="card summary-card weather-card">
+          <div class="card-header">
+            <h3>Weather Overlay</h3>
+            <button>View All</button>
+          </div>
+          <div class="weather-box">
+            <div class="weather-temp">34°C</div>
+            <div class="weather-desc">Partly Cloudy</div>
+            <div class="weather-meta">Feels like 36°C</div>
+          </div>
+        </div>
+
+        <div class="card summary-card event-card">
+          <div class="card-header">
+            <h3>Event Stream</h3>
+            <button>View All</button>
+          </div>
+          <div id="event-stream" class="event-stream"></div>
+        </div>
+      </section>
     </div>
-  `;
 
-  const recentAlerts = document.getElementById('recent-alerts');
-  recentAlerts.innerHTML = alerts.map((alert) => `
-    <div class="alert-entry">
-      <div>
-        <strong>${alert.type}</strong>
-        <small>${alert.timestamp} · ${alert.zone}</small>
-      </div>
-      <span class="tag">${alert.severity}</span>
-    </div>
-  `).join('');
-
-  const healthList = document.getElementById('system-health');
-  healthList.innerHTML = Object.entries(health).map(([key, value]) => `
-    <div class="health-row">
-      <span class="health-dot"></span>
-      <strong>${key.replace(/([A-Z])/g, ' $1').replace(/^./, (char) => char.toUpperCase())}</strong>
-      <small>${value}</small>
-    </div>
-  `).join('');
-
-  const routesList = document.getElementById('routes-list');
-  routesList.innerHTML = missions.map((route) => `
-    <div class="route-row">
-      <div class="route-meta">
-        <strong>${route.route}</strong>
-        <small>${route.distance} · ${route.assets} assets</small>
-      </div>
-      <span class="route-status">${route.status}</span>
-    </div>
-  `).join('');
-
-  const eventStream = document.getElementById('event-stream');
-  eventStream.innerHTML = [
-    { time: overview.systemTime, label: 'VT-1247 Entered Safe Zone', type: 'Operational' },
-    { time: alerts[0]?.timestamp || '14:32:10', label: alerts[0]?.type || 'Threat Detected in Restricted Zone A', type: alerts[0]?.severity || 'Critical' },
-    { time: alerts[1]?.timestamp || '14:31:45', label: alerts[1]?.type || 'Speed Limit Exceeded VT-1247', type: alerts[1]?.severity || 'High' },
-    { time: alerts[2]?.timestamp || '14:30:22', label: alerts[2]?.type || 'VT-0387 Geo-fence Exit', type: alerts[2]?.severity || 'High' }
-  ].map((item) => `
-    <div class="event-row">
-      <div>
-        <strong>${item.label}</strong>
-        <small>${item.time}</small>
-      </div>
-      <span class="tag">${item.type}</span>
-    </div>
-  `).join('');
-
-  document.querySelectorAll('.gauge-inner span')[0].textContent = `${telemetry.engine.rpm} RPM`;
-  document.querySelectorAll('.gauge-inner span')[1].textContent = telemetry.battery.voltage;
-  document.querySelectorAll('.gauge-inner span')[2].textContent = telemetry.fuel.level;
-}
-
-loginForm.addEventListener('submit', async (event) => {
-  event.preventDefault();
-
-  const username = document.getElementById('username').value.trim();
-  const password = document.getElementById('password').value.trim();
-
-  try {
-    const response = await fetch('/api/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
-    });
-
-    const data = await response.json();
-    if (!response.ok || !data.success) {
-      alert(data.message || 'Login failed');
-      return;
-    }
-
-    authToken = data.token;
-    localStorage.setItem('nexara-token', authToken);
-    setAuthVisible(true);
-    fetchDashboard();
-  } catch (err) {
-    console.error('Login failed', err);
-    alert('Unable to connect to the server');
-  }
-});
-
-logoutBtn.addEventListener('click', async () => {
-  if (!authToken) return;
-
-  await fetch('/api/logout', {
-    method: 'POST',
-    headers: { Authorization: `Bearer ${authToken}` }
-  });
-
-  localStorage.removeItem('nexara-token');
-  authToken = '';
-  setAuthVisible(false);
-});
-
-if (authToken) {
-  setAuthVisible(true);
-  fetchDashboard();
-  setInterval(fetchDashboard, 4000);
-} else {
-  setAuthVisible(false);
-}
+    <script src="/app.js"></script>
+  </body>
+</html>
